@@ -1,7 +1,7 @@
 /*
   Lab 2(Data Lab  - Pointers)
  *
- * <PLEASE REPLACE THIS LINE WITH YOUR NAME AND STUDENT USERNAME>
+ Alex Ratner - 301351581 - alexfromcanada
  *
  * pointer.c - Source file with your solutions to the Lab.
  *             This is the file you will hand in to your instructor.
@@ -106,8 +106,8 @@ INTEGER CODING RULES:
  *   Binary integer operators: &, &&, |, ||, <, >, <<, >>, ==, !=, ^, /, %
  *   Unary integer operators: ~, -
  */
-int intSize() {
-  int intArray[10];
+int intSize(int input_int) {
+  int 
   int *intPtr1;
   int *intPtr2;
   // Write code to compute size of an integer.
@@ -178,6 +178,10 @@ int pointerSize() {
  */
 void swapInts(int *ptr1, int *ptr2) {
   // Your code here
+  int swap_space = *ptr1;
+  *ptr1 = *ptr2;
+  *ptr2 = swap_space;
+  return 0;
 }
 
 /*
@@ -200,7 +204,9 @@ int changeValue() {
   int *intPtr1 = intArray;
   // Remember not to use constants greater than 255.
   // Remember to use * to dereference. You cannot use '[<index>]' syntax.
-
+  intPtr1 += 5;
+  *intPtr1 = 255;
+  *intPtr1 += 40;
   return intArray[5];
 }
 
@@ -223,7 +229,14 @@ int changeValue() {
  */
 int withinSameBlock(int *ptr1, int *ptr2) {
   // Your code here
-  return 2;
+  unsigned long ptr1int = ptr1;
+  unsigned long ptr2int = ptr2;
+  ptr1int = ptr1int >> 3;
+  ptr1int = ptr1int << 3;
+  ptr2int = ptr2int >>3;
+  ptr2int = ptr2int <<3;
+
+  return ptr1int == ptr2int;
 }
 
 /*
@@ -247,7 +260,17 @@ int withinSameBlock(int *ptr1, int *ptr2) {
  */
 int withinArray(int *intArray, int size, int *ptr) {
   // Your code here
-  return 2;
+  int *intArrayMax = intArray + size;
+  unsigned long intArrayMaxBits = intArrayMax;
+  unsigned long intArrayMinBits = intArray;
+  unsigned long ptrBits = ptr;
+  unsigned long checkMin = !((ptrBits - intArrayMinBits)>>63);
+  unsigned long checkMax = !((ptrBits - intArrayMaxBits)>>63);
+  int checkSame = checkMin == checkMax;
+  int checkIfOne = checkMin == (unsigned long)1;
+
+
+  return checkSame == checkIfOne;
 }
 
 /*
@@ -269,7 +292,13 @@ int withinArray(int *intArray, int size, int *ptr) {
  */
 int stringLength(char *s) {
   // Your code here
-  return 2;
+  char *pointer = s;
+  int count = 0;
+  while (*pointer != '\0'){
+    count++;
+    pointer++;
+  }
+  return count;
 }
 
 /*
