@@ -185,7 +185,7 @@ void swapInts(int *ptr1, int *ptr2) {
   int swap_space = *ptr1;
   *ptr1 = *ptr2;
   *ptr2 = swap_space;
-  return 0;
+  return;
 }
 
 /*
@@ -233,12 +233,10 @@ int changeValue() {
  */
 int withinSameBlock(int *ptr1, int *ptr2) {
   // Your code here
-  unsigned long ptr1int = ptr1;
-  unsigned long ptr2int = ptr2;
-  ptr1int = ptr1int >> 3;
-  ptr1int = ptr1int << 3;
-  ptr2int = ptr2int >>3;
-  ptr2int = ptr2int <<3;
+  unsigned long ptr1int = (unsigned long)ptr1;
+  unsigned long ptr2int = (unsigned long)ptr2;
+  ptr1int = ptr1int >> 6;
+  ptr2int = ptr2int >>6;
 
   return ptr1int == ptr2int;
 }
@@ -264,17 +262,24 @@ int withinSameBlock(int *ptr1, int *ptr2) {
  */
 int withinArray(int *intArray, int size, int *ptr) {
   // Your code here
+  //printf("\nIs array pointer: %lu OR\n", (unsigned long)intArray);
+  //printf("\nArray pointer is: %lu \n", (unsigned long)&intArray);
   int *intArrayMax = intArray + size;
-  unsigned long intArrayMaxBits = intArrayMax;
-  unsigned long intArrayMinBits = intArray;
-  unsigned long ptrBits = ptr;
+  //printf("\nArray max is now: %lu Should be: %lu", (unsigned long)intArrayMax, ((unsigned long)intArray)+(sizeof(int)*size));
+  unsigned long intArrayMaxBits = (unsigned long)intArrayMax;
+  unsigned long intArrayMinBits = (unsigned long)intArray;
+  unsigned long ptrBits = (unsigned long)ptr;
+  //printf("pointer to check is: %lu", ptrBits);
   unsigned long checkMin = !((ptrBits - intArrayMinBits)>>63);
-  unsigned long checkMax = !((ptrBits - intArrayMaxBits)>>63);
-  int checkSame = checkMin == checkMax;
-  int checkIfOne = checkMin == (unsigned long)1;
-
-
-  return checkSame == checkIfOne;
+  //printf("\nCheckmin is: %lu \n", checkMin);
+  unsigned long compareToMax = intArrayMaxBits - ptrBits;
+  unsigned long checkExact = compareToMax == (unsigned long)0;
+  unsigned long checkMaxOverflow = !((compareToMax)>>63);
+  unsigned long checkMax = (!checkExact) == checkMaxOverflow;
+  //printf("\ncompareToMax is: %lu checkMaxOverflow is: %lu  checkMax is: %lu\n", compareToMax, checkMaxOverflow, checkMax);
+  int check = checkMin == checkMax;
+  //printf("\nCHECK: %d\n", check);
+  return check;
 }
 
 /*
@@ -328,15 +333,18 @@ int stringLength(char *s) {
  *   Binary integer operators: &, &&, |, ||, <, >, <<, >>, ==, !=, ^, /, %
  *   Unary integer operators: ~, -
  */
+  
+
 int endianExperiment(int *ptr) {
   char *bytePtr;
   // Your code here
-  char byte1 = 0x0;
-  char byte2 = 0x4;
-  char byte3 = 0x81;
-  char byte4 = 0x7F;
 
-  bytePtr = ptr;
+  char byte1 = 127;
+  char byte2 = 0x81;
+  char byte3 = 0x4;
+  char byte4 = 0;
+
+  bytePtr = (void*)ptr;
   *bytePtr = byte1;
   bytePtr++;
   *bytePtr = byte2;
@@ -431,7 +439,20 @@ void selectionSort(int *arr, int len) {
 }
 
 
-int main(){
+/*int main(){
+
+void testInt(){
+  int integer = 295295;
+  int *intPtr = &integer;
+  unsigned char *bytePtr = (void*)intPtr;
+  for (int i =1; i<=4; i++){
+    printf("\n Byte %d is: %d As char: %c\n", i, (unsigned int)*bytePtr, *bytePtr);
+    bytePtr++;
+  }
+}
+
+  testInt();
+
   printf("How many bytes is an int?    %d", intSize());
   printf("How many bytes is a double?    %d", doubleSize());
   printf("How many bytes is a pointer?    %d", pointerSize());
@@ -440,14 +461,14 @@ int main(){
   int swapInt1 = 234;
   int swapInt2 = 567;
   printf("Swap ints! \nOriginal: %d %d", swapInt1, swapInt2);
-  swapInts(swapInt1, swapInt2);
+  swapInts(&swapInt1, &swapInt2);
   printf("Swapped: %d %d", swapInt1, swapInt2);
   printf("Changed value of array to 295:    %d", changeValue());
   int sameBlock1 = 532;
   int sameBlock2 = 873;
-  printf("Are 2 ints within same block when in a row? %d \nAre 2 ints within the same block when separate? %d", withinSameBlock(sameBlock1, sameBlock2), withinSameBlock(sameBlock2, swapInt1));
+  printf("Are 2 ints within same block when in a row? %d \nAre 2 ints within the same block when separate? %d", withinSameBlock(&sameBlock1, &sameBlock2), withinSameBlock(&sameBlock2, &swapInt1));
   int intArray[] = {10, 6, 34, 4, 57, 2, 78, 85, 9, 100};
-  printf("Is int in array (yes)?    %d \nIs int in array (no)?    %d", withinArray(intArray, 10, intArray[7]), withinArray(intArray, 10, swapInt2));
+  printf("Is int in array (yes)?    %d \nIs int in array (no)?    %d", withinArray(intArray, 10, &intArray[7]), withinArray(intArray, 10, &swapInt2));
   char string1[] = "Bjai dhsk 87g aiom!j";
   char string2[] = "yras";
   char string3[] = "";
@@ -458,10 +479,10 @@ int main(){
   printf("%s    |%d|Should be 0", string3, stringLength(string3));
   printf("%s    |%d|Should be 1", string4, stringLength(string4));
   int endian = 789;
-  printf("Change value pointed to by ptr to 295295:    %d", endianExperiment(endian));
-  printf("Smallest index in array is (should be 5):    %d", smallest_idx(intArray));
+  printf("Change value pointed to by ptr to 295295:    %d", endianExperiment(&endian));
+  printf("Smallest index in array is (should be 5):    %d", smallest_idx(intArray, 10));
   printf("Sorting array.");
   printf("Original array %d %d %d %d %d %d %d %d %d %d", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4], intArray[5], intArray[6], intArray[7], intArray[8], intArray[9]);
   selectionSort(intArray, 10);
   printf("Sorted array %d %d %d %d %d %d %d %d %d %d", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4], intArray[5], intArray[6], intArray[7], intArray[8], intArray[9]);
-}
+}*/
