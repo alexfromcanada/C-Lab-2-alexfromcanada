@@ -106,13 +106,14 @@ INTEGER CODING RULES:
  *   Binary integer operators: &, &&, |, ||, <, >, <<, >>, ==, !=, ^, /, %
  *   Unary integer operators: ~, -
  */
-int intSize(int input_int) {
-  int 
+int intSize() {
+  int intArray[10];
   int *intPtr1;
   int *intPtr2;
   // Write code to compute size of an integer.
-
-  return 2;
+  intPtr1 = intArray;
+  intPtr2 = intArray +1;
+  return (int)((unsigned long)intPtr2 - (unsigned long)intPtr1);
 }
 
 /*
@@ -134,8 +135,9 @@ int doubleSize() {
   double *doubPtr1;
   double *doubPtr2;
   // Write code to compute size of a double.
-
-  return 2;
+  doubPtr1 = doubArray;
+  doubPtr2 = doubArray + 1;
+  return (int)((unsigned long)doubPtr2 - (unsigned long)doubPtr1);
 }
 
 /*
@@ -157,8 +159,10 @@ int pointerSize() {
   double **ptrPtr1;
   double **ptrPtr2;
   // Write code to compute size of a pointer.
+  ptrPtr1 = ptrArray;
+  ptrPtr2 = ptrArray + 1;
 
-  return 2;
+  return (int)((unsigned long)ptrPtr2 - (unsigned long)ptrPtr1);
 }
 
 /*
@@ -327,6 +331,19 @@ int stringLength(char *s) {
 int endianExperiment(int *ptr) {
   char *bytePtr;
   // Your code here
+  char byte1 = 0x0;
+  char byte2 = 0x4;
+  char byte3 = 0x81;
+  char byte4 = 0x7F;
+
+  bytePtr = ptr;
+  *bytePtr = byte1;
+  bytePtr++;
+  *bytePtr = byte2;
+  bytePtr++;
+  *bytePtr = byte3;
+  bytePtr++;
+  *bytePtr = byte4;
   return *ptr;
 }
 
@@ -390,6 +407,16 @@ int smallest_idx(int *arr, int len) {
   int smallest = arr[0];
 
   // TODO: implement me using a for loop.
+  int *counter = arr;
+  if (len <=0) return -1;
+
+  for (i=1; i<len; i++){
+    counter++;
+    if(smallest > *counter){
+      smallest_i = i;
+      smallest = *counter;
+    }
+  }
 
   return smallest_i;
 }
@@ -401,4 +428,40 @@ void selectionSort(int *arr, int len) {
     swap_idx = i + smallest_idx(arr + i, len - i);
     swapInts(arr + i, arr + swap_idx);
   }
+}
+
+
+int main(){
+  printf("How many bytes is an int?    %d", intSize());
+  printf("How many bytes is a double?    %d", doubleSize());
+  printf("How many bytes is a pointer?    %d", pointerSize());
+
+  //swapInts test
+  int swapInt1 = 234;
+  int swapInt2 = 567;
+  printf("Swap ints! \nOriginal: %d %d", swapInt1, swapInt2);
+  swapInts(swapInt1, swapInt2);
+  printf("Swapped: %d %d", swapInt1, swapInt2);
+  printf("Changed value of array to 295:    %d", changeValue());
+  int sameBlock1 = 532;
+  int sameBlock2 = 873;
+  printf("Are 2 ints within same block when in a row? %d \nAre 2 ints within the same block when separate? %d", withinSameBlock(sameBlock1, sameBlock2), withinSameBlock(sameBlock2, swapInt1));
+  int intArray[] = {10, 6, 34, 4, 57, 2, 78, 85, 9, 100};
+  printf("Is int in array (yes)?    %d \nIs int in array (no)?    %d", withinArray(intArray, 10, intArray[7]), withinArray(intArray, 10, swapInt2));
+  char string1[] = "Bjai dhsk 87g aiom!j";
+  char string2[] = "yras";
+  char string3[] = "";
+  char string4[] = "y";
+  printf("How many characters is each string?");
+  printf("%s    |%d|Should be 20", string1, stringLength(string1));
+  printf("%s    |%d|Should be 4", string2, stringLength(string2));
+  printf("%s    |%d|Should be 0", string3, stringLength(string3));
+  printf("%s    |%d|Should be 1", string4, stringLength(string4));
+  int endian = 789;
+  printf("Change value pointed to by ptr to 295295:    %d", endianExperiment(endian));
+  printf("Smallest index in array is (should be 5):    %d", smallest_idx(intArray));
+  printf("Sorting array.");
+  printf("Original array %d %d %d %d %d %d %d %d %d %d", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4], intArray[5], intArray[6], intArray[7], intArray[8], intArray[9]);
+  selectionSort(intArray, 10);
+  printf("Sorted array %d %d %d %d %d %d %d %d %d %d", intArray[0], intArray[1], intArray[2], intArray[3], intArray[4], intArray[5], intArray[6], intArray[7], intArray[8], intArray[9]);
 }
